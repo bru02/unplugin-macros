@@ -47,10 +47,10 @@ export default createUnplugin<Options | undefined, false>((rawOptions = {}) => {
       // you will need to handle the communication between them
       // and pass to this function
       fetchModule(id) {
-        return node.fetchModule(id)
+        return node.fetchModule(id, 'ssr')
       },
       resolveId(id, importer) {
-        return node.resolveId(id, importer)
+        return node.resolveId(id, importer, 'ssr')
       },
     })
   }

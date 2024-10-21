@@ -1,8 +1,29 @@
-import * as rollup from 'rollup';
-import { O as Options } from './options-64bf4571.js';
-import 'vite';
+import plugin from './index.js';
+import 'unplugin';
+import './index-CpQbvnzJ.js';
 import '@rollup/pluginutils';
+import 'vite';
+import 'vite-node/client';
 
-declare const _default: (options?: Options | undefined) => rollup.Plugin<any>;
+/**
+ * This entry file is for Rollup plugin.
+ *
+ * @module
+ */
 
-export = _default;
+/**
+ * Rollup plugin
+ *
+ * @example
+ * ```ts
+ * // rollup.config.js
+ * import Macros from 'unplugin-macros/rollup'
+ *
+ * export default {
+ *   plugins: [Macros()],
+ * }
+ * ```
+ */
+declare const _default: typeof plugin.rollup;
+
+export { _default as default };

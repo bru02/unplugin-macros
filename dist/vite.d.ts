@@ -1,7 +1,29 @@
-import * as vite from 'vite';
-import { O as Options } from './options-64bf4571.js';
+import plugin from './index.js';
+import 'unplugin';
+import './index-CpQbvnzJ.js';
 import '@rollup/pluginutils';
+import 'vite';
+import 'vite-node/client';
 
-declare const _default: (options?: Options | undefined) => vite.Plugin;
+/**
+ * This entry file is for Vite plugin.
+ *
+ * @module
+ */
 
-export = _default;
+/**
+ * Vite plugin
+ *
+ * @example
+ * ```ts
+ * // vite.config.ts
+ * import Macros from 'unplugin-macros/vite'
+ *
+ * export default defineConfig({
+ *   plugins: [Macros()],
+ * })
+ * ```
+ */
+declare const _default: typeof plugin.vite;
+
+export { _default as default };

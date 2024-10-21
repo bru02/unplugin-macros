@@ -1,12 +1,18 @@
-import * as unplugin from 'unplugin';
-import { O as Options } from './options-64bf4571.js';
-import { MacroContext } from './api.js';
-import 'vite';
+import { UnpluginInstance } from 'unplugin';
+import { O as Options } from './index-CpQbvnzJ.js';
+export { M as MacroContext } from './index-CpQbvnzJ.js';
 import '@rollup/pluginutils';
+import 'vite';
 import 'vite-node/client';
 
-declare const _default: unplugin.UnpluginInstance<Options | undefined, false>;
+/**
+ * This entry file is for main unplugin.
+ * @module
+ */
 
-declare function defineMacro<Args extends any[], Return>(fn: (this: MacroContext, ...args: Args) => Return): (...args: Args) => Return;
+/**
+ * The main unplugin instance.
+ */
+declare const plugin: UnpluginInstance<Options | undefined, false>;
 
-export { MacroContext, Options, _default as default, defineMacro };
+export { Options, plugin as default };

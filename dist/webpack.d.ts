@@ -1,7 +1,27 @@
-import { O as Options } from './options-64bf4571.js';
-import 'vite';
+import plugin from './index.js';
+import 'unplugin';
+import './index-CpQbvnzJ.js';
 import '@rollup/pluginutils';
+import 'vite';
+import 'vite-node/client';
 
-declare const _default: (options?: Options | undefined) => WebpackPluginInstance;
+/**
+ * This entry file is for webpack plugin.
+ *
+ * @module
+ */
 
-export = _default;
+/**
+ * Webpack plugin
+ *
+ * @example
+ * ```ts
+ * // webpack.config.js
+ * module.exports = {
+ *  plugins: [require('unplugin-macros/webpack')()],
+ * }
+ * ```
+ */
+declare const _default: typeof plugin.webpack;
+
+export { _default as default };

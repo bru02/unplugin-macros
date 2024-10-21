@@ -1,8 +1,29 @@
-import * as esbuild from 'esbuild';
-import { O as Options } from './options-64bf4571.js';
-import 'vite';
+import plugin from './index.js';
+import 'unplugin';
+import './index-CpQbvnzJ.js';
 import '@rollup/pluginutils';
+import 'vite';
+import 'vite-node/client';
 
-declare const _default: (options?: Options | undefined) => esbuild.Plugin;
+/**
+ * This entry file is for esbuild plugin. Requires esbuild >= 0.15
+ *
+ * @module
+ */
 
-export = _default;
+/**
+ * Esbuild plugin
+ *
+ * @example
+ * ```ts
+ * // esbuild.config.js
+ * import { build } from 'esbuild'
+ *
+ * build({
+ *   plugins: [require('unplugin-macros/esbuild')()],
+ * })
+ * ```
+ */
+declare const _default: typeof plugin.esbuild;
+
+export { _default as default };

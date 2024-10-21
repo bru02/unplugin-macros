@@ -1,35 +1,64 @@
-import { createUnplugin } from 'unplugin'
+/**
+ * This entry file is for main unplugin.
+ * @module
+ */
+
 import { createFilter } from '@rollup/pluginutils'
-import { type ModuleNode, type ViteDevServer, createServer } from 'vite'
-import { ViteNodeServer } from 'vite-node/server'
+import { createUnplugin, type UnpluginInstance } from 'unplugin'
 import { ViteNodeRunner } from 'vite-node/client'
+import { ViteNodeServer } from 'vite-node/server'
 import { installSourcemapsSupport } from 'vite-node/source-map'
-import { type Options, resolveOptions } from './core/options'
-import { type MacroContext, transformMacros } from './core'
+import { transformMacros } from './core'
+import { resolveOptions, type Options } from './core/options'
+import type { ModuleNode, ViteDevServer } from 'vite'
 
-export type { Options, MacroContext } from './core'
+export type { MacroContext, Options } from './core'
 
-export default createUnplugin<Options | undefined, false>((rawOptions = {}) => {
+/**
+ * The main unplugin instance.
+ */
+const plugin: UnpluginInstance<Options | undefined, false> = createUnplugin<
+  Options | undefined,
+  false
+>((rawOptions = {}) => {
   const options = resolveOptions(rawOptions)
   const filter = createFilter(options.include, options.exclude)
 
-  let builtInServer = true
+  let externalServer: boolean
   let server: ViteDevServer
   let node: ViteNodeServer
-  let runner: ViteNodeRunner
+  let runner: ViteNodeRunner | undefined
 
   const deps: Map<string, Set<string>> = new Map()
 
   let initPromise: Promise<void> | undefined
+  function init() {
+    if (initPromise) return initPromise
+    return (initPromise = (async () => {
+      externalServer = !!options.viteServer
+      if (options.viteServer) {
+        server = options.viteServer
+        externalServer = false
+      } else {
+        server = await initServer()
+      }
+      initRunner()
+    })())
+  }
+
   async function initServer() {
-    server = await createServer({
+    const { createServer } = await import('vite')
+    const server = await createServer({
       ...options.viteConfig,
       optimizeDeps: {
-        disabled: true,
+        include: [],
+        noDiscovery: true,
       },
     })
     await server.pluginContainer.buildStart({})
+    return server
   }
+
   function initRunner() {
     // create vite-node server
     node = new ViteNodeServer(server)
@@ -54,17 +83,10 @@ export default createUnplugin<Options | undefined, false>((rawOptions = {}) => {
       },
     })
   }
-  function init() {
-    if (initPromise) return initPromise
-    return (initPromise = (async () => {
-      server || (await initServer())
-      initRunner()
-    })())
-  }
 
   async function getRunner() {
     await init()
-    return runner
+    return runner!
   }
 
   const name = 'unplugin-macros'
@@ -73,7 +95,7 @@ export default createUnplugin<Options | undefined, false>((rawOptions = {}) => {
     enforce: options.enforce,
 
     buildEnd() {
-      if (builtInServer && server)
+      if (!externalServer && server)
         // close the built-in vite server
         return server.close()
     },
@@ -82,17 +104,26 @@ export default createUnplugin<Options | undefined, false>((rawOptions = {}) => {
       return filter(id)
     },
 
-    transform(code, id) {
-      return transformMacros(code, id, getRunner, deps, options.attrs)
+    transform(source, id) {
+      return transformMacros({
+        source,
+        id,
+        getRunner,
+        deps,
+        attrs: options.attrs,
+        unpluginContext: this,
+      })
     },
 
     vite: {
-      configureServer(_server) {
-        builtInServer = false
-        server = _server
+      configureServer(server) {
+        if (options.viteServer === undefined) {
+          options.viteServer = server
+        }
       },
 
       handleHotUpdate({ file, server, modules }) {
+        if (!runner) return
         const cache = runner.moduleCache
         const mod = cache.get(file)
         if (!mod) return
@@ -114,9 +145,4 @@ export default createUnplugin<Options | undefined, false>((rawOptions = {}) => {
     },
   }
 })
-
-export function defineMacro<Args extends any[], Return>(
-  fn: (this: MacroContext, ...args: Args) => Return
-): (...args: Args) => Return {
-  return fn
-}
+export default plugin

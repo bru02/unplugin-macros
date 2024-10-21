@@ -1,0 +1,21 @@
+{
+  "name": "@unplugin/macros",
+  "version": "0.13.3",
+  "exports": {
+    "./index": "./src/index.ts",
+    "./api": "./src/api.ts",
+    "./esbuild": "./src/esbuild.ts",
+    "./rollup": "./src/rollup.ts",
+    "./vite": "./src/vite.ts",
+    "./webpack": "./src/webpack.ts"
+  },
+  "publish": {
+    "include": [
+      "src",
+      "package.json",
+      "jsr.json",
+      "README.md",
+      "LICENSE"
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-# unplugin-macros [![npm](https://img.shields.io/npm/v/unplugin-macros.svg)](https://npmjs.com/package/unplugin-macros)
+# unplugin-macros [![npm](https://img.shields.io/npm/v/unplugin-macros.svg)](https://npmjs.com/package/unplugin-macros) [![jsr](https://img.shields.io/endpoint?url=https%3A%2F%2Fjsr-api.sxzz.moe%2Fbadge%2F%40unplugin%2Fmacros)](https://jsr.io/@unplugin/macros)
 
 [![Unit Test](https://github.com/unplugin/unplugin-macros/actions/workflows/unit-test.yml/badge.svg)](https://github.com/unplugin/unplugin-macros/actions/workflows/unit-test.yml)
 
@@ -8,7 +8,11 @@
 ## Installation
 
 ```bash
+# npm
 npm i -D unplugin-macros
+
+# jsr
+npx jsr add -D @unplugin/macros
 ```
 
 <details>
@@ -42,6 +46,8 @@ export default {
 <details>
 <summary>esbuild</summary><br>
 
+Requires esbuild >= 0.15
+
 ```ts
 // esbuild.config.js
 import { build } from 'esbuild'
@@ -66,25 +72,11 @@ module.exports = {
 
 <br></details>
 
-<details>
-<summary>Vue CLI</summary><br>
-
-```ts
-// vue.config.js
-module.exports = {
-  configureWebpack: {
-    plugins: [require('unplugin-macros/webpack')()],
-  },
-}
-```
-
-<br></details>
-
 ## Usage
 
 ```js
 // main.js
-import { getRandom, buildTime } from './macros' assert { type: 'macro' }
+import { buildTime, getRandom } from './macros' with { type: 'macro' }
 
 getRandom() // Will be replaced with a random number at build time
 buildTime // Will be replaced with the timestamp at the build time
@@ -99,6 +91,36 @@ export const buildTime = Date.now()
 ```
 
 See more in [Bun Macros](https://bun.sh/blog/bun-macros).
+
+### TypeScript
+
+Import Attributes syntax is supported in TypeScript >= 5.3, but you can replace `with` keyword with `assert`, which is supported in TypeScript >= 4.5.
+
+### ESLint
+
+ESLint is not supported Import Attributes syntax yet, but you can use [`@babel/eslint-parser`](https://www.npmjs.com/package/@babel/eslint-parser) or [`@typescript-eslint/parser`](https://typescript-eslint.io/packages/parser/).
+
+```js
+// eslint.config.js
+import parser from '@babel/eslint-parser'
+
+export default [
+  {
+    // ...
+    languageOptions: {
+      parser,
+      parserOptions: {
+        requireConfigFile: false,
+        babelOptions: { parserOpts: { plugins: ['importAttributes'] } },
+      },
+    },
+  },
+]
+```
+
+## Options
+
+Refer to [docs](https://jsr.io/@unplugin/macros/doc/api/~/Options).
 
 ## Thanks
 
